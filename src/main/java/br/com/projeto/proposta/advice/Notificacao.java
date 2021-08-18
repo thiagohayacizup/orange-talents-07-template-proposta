@@ -1,6 +1,7 @@
 package br.com.projeto.proposta.advice;
 
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
+import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,6 +36,12 @@ public class Notificacao {
     @ResponseStatus( HttpStatus.BAD_REQUEST )
     RespostaErro emailInvalido( final EmailInvalidoException exception ){
         return new RespostaErro(400, exception.getMessage() );
+    }
+
+    @ExceptionHandler({PropostaComDocumentoJaCriadaException.class})
+    @ResponseStatus( HttpStatus.UNPROCESSABLE_ENTITY )
+    RespostaErro propostaComDocumentoJaCadastrada( final PropostaComDocumentoJaCriadaException exception ){
+        return new RespostaErro(422, exception.getMessage() );
     }
 
 }

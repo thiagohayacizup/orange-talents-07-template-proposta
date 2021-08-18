@@ -1,8 +1,8 @@
 package br.com.projeto.proposta.proposta;
 
-import br.com.projeto.proposta.documento.validador.Documento;
 import br.com.projeto.proposta.email.Email;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
+import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -11,8 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
-public
-class Proposta {
+public class Proposta {
 
     public static Builder construtor(){
         return new Builder();
@@ -53,6 +52,13 @@ class Proposta {
     }
 
     public Proposta criar( final PropostaRepositorio propostaRepositorio ){
+        propostaRepositorio
+                .findByDocumento( documento )
+                .ifPresent( proposta -> {
+                    throw new PropostaComDocumentoJaCriadaException(
+                            String.format("Ja existe uma proposta com o documento { %s }.", documento)
+                    );
+                });
         return propostaRepositorio.save( this );
     }
 
