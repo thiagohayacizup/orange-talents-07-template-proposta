@@ -1,5 +1,6 @@
 package br.com.projeto.proposta.proposta.controlador;
 
+import br.com.projeto.proposta.analise.financeira.AnaliseFinanceira;
 import br.com.projeto.proposta.documento.validador.Documento;
 import br.com.projeto.proposta.proposta.Proposta;
 import br.com.projeto.proposta.proposta.PropostaRepositorio;
@@ -38,12 +39,12 @@ class PropostaRequisicao {
         builder.comSalario( salario );
     }
 
-    PropostaResposta criar( final PropostaRepositorio propostaRepositorio ){
+    PropostaResposta criar(final PropostaRepositorio propostaRepositorio, final AnaliseFinanceira analiseFinanceira ){
         return new PropostaResposta(
                 builder
                         .comDocumento( documento )
                         .construir()
-                        .criar( propostaRepositorio )
+                        .criar( propostaRepositorio, analiseFinanceira )
         );
     }
 

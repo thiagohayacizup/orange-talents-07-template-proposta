@@ -27,8 +27,6 @@ public class Notificacao {
     RespostaErro dadosInvalidos( final ConstraintViolationException exception ){
         final Set<ConstraintViolation<?>> violations = exception.getConstraintViolations();
         final Optional<ConstraintViolation<?>> first = violations.stream().findFirst();
-        if( first.isEmpty() )
-            return new RespostaErro( 400, exception.getMessage());
         return new RespostaErro( 400, first.get().getMessage() );
     }
 

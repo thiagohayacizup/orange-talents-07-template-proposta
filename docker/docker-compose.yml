@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.8'
 services:
 # BANCO DADOS PROPOSTA--------------------------------------------------------
   banco-dados-proposta:
@@ -12,11 +12,25 @@ services:
       - 3306:3306
     volumes:
       - banco-dados-proposta-volume:/var/lib/mariadb
-# ADMINER --------------------------------------------------------------------
-  adminer:
-    image: adminer:latest
+# ANALISE FINANCEIRA API
+  analise-financeira:
+    image: zupacademy/analise-financeira
     ports:
-      - 8081:8080
+      - 8081:9999
+    environment:
+      SERVER_PORT: 9999
+      LOG_LEVEL: INFO
+      URL_SISTEMA_CARTAO: http:/contas:8083/api/cartoes
+      JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+# CONTAS API
+  contas:
+    image: zupacademy/contas
+    ports:
+      - 8082:8888
+    environment:
+      SERVER_PORT: 8888
+      LOG_LEVEL: INFO
+      JAEGER_ENDPOINT: http://jaeger:14268/api/traces
 
 volumes:
   banco-dados-proposta-volume:

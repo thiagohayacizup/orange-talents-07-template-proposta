@@ -1,7 +1,12 @@
 package br.com.projeto.proposta.proposta;
 
+import br.com.projeto.proposta.analise.financeira.AnaliseFinanceira;
+import br.com.projeto.proposta.analise.financeira.AnaliseFinanceiraResposta;
+import br.com.projeto.proposta.analise.financeira.ResultadoSolicitacao;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -136,6 +141,48 @@ class PropostaIntegrationTest {
                 .andExpect( MockMvcResultMatchers.content().contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( MockMvcResultMatchers.jsonPath("$.codigo").value(422) )
                 .andExpect( MockMvcResultMatchers.jsonPath("$.mensagem").value("Ja existe uma proposta com o documento { 959.807.330-00 }.") );
+    }
+
+    @Test
+    @DisplayName("Analise de solicitaçao com restrição")
+    void analiseSolicitacaoComRestricao(){
+        final AnaliseFinanceira analiseFinanceiraMock = Mockito.mock(AnaliseFinanceira.class);
+
+        final AnaliseFinanceiraResposta resposta = new AnaliseFinanceiraResposta();
+        resposta.setResultadoSolicitacao( ResultadoSolicitacao.COM_RESTRICAO );
+
+        Mockito.when( analiseFinanceiraMock.solicitar( Mockito.any() ) ).thenReturn( resposta );
+
+        final PropostaRepositorio propostaRepositorioMock = Mockito.mock(PropostaRepositorio.class);
+
+        final Proposta proposta = Proposta.mock( StatusProposta.NAO_ELEGIVEL );
+
+        Mockito.when( propostaRepositorioMock.save( Mockito.any() ) ).thenReturn( proposta );
+
+        proposta.criar( propostaRepositorioMock, analiseFinanceiraMock );
+
+        Assertions.assertEquals( StatusProposta.NAO_ELEGIVEL, proposta.getStatus() );
+    }
+
+    @Test
+    @DisplayName("Analise de solicitaçao sem restrição")
+    void analiseSolicitacaoSemRestricao(){
+        final AnaliseFinanceira analiseFinanceiraMock = Mockito.mock(AnaliseFinanceira.class);
+
+        final AnaliseFinanceiraResposta resposta = new AnaliseFinanceiraResposta();
+        resposta.setResultadoSolicitacao( ResultadoSolicitacao.SEM_RESTRICAO );
+
+        Mockito.when( analiseFinanceiraMock.solicitar( Mockito.any() ) ).thenReturn( resposta );
+
+        final PropostaRepositorio propostaRepositorioMock = Mockito.mock(PropostaRepositorio.class);
+
+        final Proposta proposta = Proposta.mock( StatusProposta.ELEGIVEL );
+
+        Mockito.when( propostaRepositorioMock.save( Mockito.any() ) ).thenReturn( proposta );
+
+        proposta.criar( propostaRepositorioMock, analiseFinanceiraMock );
+
+        Assertions.assertEquals( StatusProposta.ELEGIVEL, proposta.getStatus() );
     }
 
 }

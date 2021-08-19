@@ -1,5 +1,7 @@
 package br.com.projeto.proposta.proposta;
 
+import br.com.projeto.proposta.analise.financeira.AnaliseFinanceira;
+import br.com.projeto.proposta.analise.financeira.AnaliseFinanceiraRequisicao;
 import br.com.projeto.proposta.email.Email;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
@@ -37,6 +39,9 @@ public class Proposta {
     @DecimalMin( value = "0.0", message = "Salario nao pode ser negativo.")
     private @NotNull BigDecimal salario;
 
+    @Enumerated( EnumType.STRING )
+    private StatusProposta status;
+
     private Proposta(){}
 
     Proposta( final Builder builder ){
@@ -51,7 +56,20 @@ public class Proposta {
         email = builder.email;
     }
 
-    public Proposta criar( final PropostaRepositorio propostaRepositorio ){
+    public Proposta criar( final PropostaRepositorio propostaRepositorio, final AnaliseFinanceira analiseFinanceira ){
+        naoPodeExistirPropostaParaDocumentoExistente( propostaRepositorio );
+        propostaRepositorio.save( this );
+        definirStatusProposta( analiseFinanceira );
+        return propostaRepositorio.save( this );
+    }
+
+    private void definirStatusProposta( final AnaliseFinanceira analiseFinanceira ){
+        status = analiseFinanceira
+                .solicitar( new AnaliseFinanceiraRequisicao(documento, nome, id.toString()) )
+                .paraStatusProposta();
+    }
+
+    private void naoPodeExistirPropostaParaDocumentoExistente( final PropostaRepositorio propostaRepositorio ){
         propostaRepositorio
                 .findByDocumento( documento )
                 .ifPresent( proposta -> {
@@ -59,7 +77,6 @@ public class Proposta {
                             String.format("Ja existe uma proposta com o documento { %s }.", documento)
                     );
                 });
-        return propostaRepositorio.save( this );
     }
 
     public static class Builder {
@@ -107,6 +124,24 @@ public class Proposta {
 
     public String getNome() {
         return nome;
+    }
+
+    StatusProposta getStatus() {
+        return status;
+    }
+
+    static Proposta mock( final StatusProposta status ){
+        final Proposta proposta = Proposta
+                .construtor()
+                .comDocumento("297.036.590-12")
+                .comSalario(BigDecimal.TEN)
+                .comEndereco("Rua x")
+                .comNome("Proposta")
+                .comEmail("email@dominio.com")
+                .construir();
+        proposta.id = 1L;
+        proposta.status = status;
+        return proposta;
     }
 
 }
