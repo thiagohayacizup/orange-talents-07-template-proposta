@@ -5,6 +5,8 @@ import br.com.projeto.proposta.analise.financeira.AnaliseFinanceiraRequisicao;
 import br.com.projeto.proposta.email.Email;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -63,10 +65,15 @@ public class Proposta {
         return propostaRepositorio.save( this );
     }
 
+    private transient final Logger logger = LoggerFactory.getLogger(Proposta.class);
+
     private void definirStatusProposta( final AnaliseFinanceira analiseFinanceira ){
         status = analiseFinanceira
                 .solicitar( new AnaliseFinanceiraRequisicao(documento, nome, id.toString()) )
                 .paraStatusProposta();
+        logger.info(
+                "Analise financeira do solicitante {} processado",
+                documento.split("\\.")[0] + ".***-" + documento.split("-")[1] );
     }
 
     private void naoPodeExistirPropostaParaDocumentoExistente( final PropostaRepositorio propostaRepositorio ){
