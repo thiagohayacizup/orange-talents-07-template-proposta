@@ -3,6 +3,7 @@ package br.com.projeto.proposta.proposta;
 import br.com.projeto.proposta.analise.financeira.AnaliseFinanceira;
 import br.com.projeto.proposta.analise.financeira.AnaliseFinanceiraResposta;
 import br.com.projeto.proposta.analise.financeira.ResultadoSolicitacao;
+import feign.FeignException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -155,7 +156,7 @@ class PropostaIntegrationTest {
 
         final PropostaRepositorio propostaRepositorioMock = Mockito.mock(PropostaRepositorio.class);
 
-        final Proposta proposta = Proposta.mock( StatusProposta.NAO_ELEGIVEL );
+        final Proposta proposta = Proposta.mock();
 
         Mockito.when( propostaRepositorioMock.save( Mockito.any() ) ).thenReturn( proposta );
 
@@ -176,13 +177,31 @@ class PropostaIntegrationTest {
 
         final PropostaRepositorio propostaRepositorioMock = Mockito.mock(PropostaRepositorio.class);
 
-        final Proposta proposta = Proposta.mock( StatusProposta.ELEGIVEL );
+        final Proposta proposta = Proposta.mock();
 
         Mockito.when( propostaRepositorioMock.save( Mockito.any() ) ).thenReturn( proposta );
 
         proposta.criar( propostaRepositorioMock, analiseFinanceiraMock );
 
         Assertions.assertEquals( StatusProposta.ELEGIVEL, proposta.getStatus() );
+    }
+
+    @Test
+    @DisplayName("Falha de Conexão Sistema externo")
+    void falhaConexao(){
+        final AnaliseFinanceira analiseFinanceiraMock = Mockito.mock(AnaliseFinanceira.class);
+
+        Mockito.when( analiseFinanceiraMock.solicitar( Mockito.any() ) ).thenThrow(FeignException.class);
+
+        final PropostaRepositorio propostaRepositorioMock = Mockito.mock(PropostaRepositorio.class);
+
+        final Proposta proposta = Proposta.mock();
+
+        Mockito.when( propostaRepositorioMock.save( Mockito.any() ) ).thenReturn( proposta );
+
+        proposta.criar( propostaRepositorioMock, analiseFinanceiraMock );
+
+        Assertions.assertNull( proposta.getStatus() );
     }
 
 }

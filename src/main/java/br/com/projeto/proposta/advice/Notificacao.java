@@ -42,4 +42,5 @@ public class Notificacao {
         return new RespostaErro(422, exception.getMessage() );
     }
 
+
 }
