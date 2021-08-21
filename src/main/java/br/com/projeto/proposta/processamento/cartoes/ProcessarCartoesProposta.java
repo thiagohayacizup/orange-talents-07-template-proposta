@@ -23,7 +23,7 @@ class ProcessarCartoesProposta {
 
     private final Logger logger = LoggerFactory.getLogger(ProcessarCartoesProposta.class);
 
-    @Scheduled( initialDelay = 5000, fixedDelay = 5000 )
+    @Scheduled( initialDelayString = "${scheduler.initial.delay}", fixedDelayString = "${scheduler.fixed.delay}" )
     void processar(){
 
         try{
