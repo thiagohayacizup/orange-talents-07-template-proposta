@@ -2,6 +2,7 @@ package br.com.projeto.proposta.advice;
 
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
+import br.com.projeto.proposta.proposta.exception.PropostaNaoEncontradaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,5 +43,10 @@ public class Notificacao {
         return new RespostaErro(422, exception.getMessage() );
     }
 
+    @ExceptionHandler({PropostaNaoEncontradaException.class})
+    @ResponseStatus( HttpStatus.NOT_FOUND )
+    RespostaErro propostaNaoEncontrada( final PropostaNaoEncontradaException exception ){
+        return new RespostaErro(404, exception.getMessage() );
+    }
 
 }

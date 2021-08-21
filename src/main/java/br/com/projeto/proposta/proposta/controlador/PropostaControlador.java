@@ -5,6 +5,7 @@ import br.com.projeto.proposta.proposta.Proposta;
 import br.com.projeto.proposta.proposta.PropostaRepositorio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -12,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 
 @RestController
+@RequestMapping("/proposta")
 class PropostaControlador {
 
     private final PropostaRepositorio propostaRepositorio;
@@ -25,7 +27,7 @@ class PropostaControlador {
 
     private final Logger logger = LoggerFactory.getLogger(PropostaControlador.class);
 
-    @PostMapping("/proposta")
+    @PostMapping
     @ResponseBody ResponseEntity<PropostaResposta> criar(@RequestBody @Valid final PropostaRequisicao propostaRequisicao, final UriComponentsBuilder uriComponentsBuilder ){
         final PropostaResposta propostaResposta = propostaRequisicao.criar( propostaRepositorio, analiseFinanceira );
         logger.info("Proposta criada com sucesso.");
@@ -36,6 +38,14 @@ class PropostaControlador {
                                 .build( propostaResposta.getId() )
                 )
                 .body( propostaResposta );
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus( HttpStatus.OK )
+    @ResponseBody PropostaDetalhadaResposta obterProposta( @PathVariable("id") final Long id ){
+        return new PropostaDetalhadaResposta(
+                Proposta.buscarPropostaPorId( id, propostaRepositorio )
+        );
     }
 
 }

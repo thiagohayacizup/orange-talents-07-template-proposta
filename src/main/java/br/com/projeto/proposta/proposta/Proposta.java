@@ -7,6 +7,7 @@ import br.com.projeto.proposta.cartao.CartaoRequisicao;
 import br.com.projeto.proposta.email.Email;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
+import br.com.projeto.proposta.proposta.exception.PropostaNaoEncontradaException;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,14 @@ public class Proposta {
 
     public static List<Proposta> buscarPropostarSemCartoes( final PropostaRepositorio propostaRepositorio ){
         return propostaRepositorio.findFirst10ByStatusAndNumeroCartaoIsNull( StatusProposta.ELEGIVEL );
+    }
+
+    public static Proposta buscarPropostaPorId(final Long id, final PropostaRepositorio propostaRepositorio) {
+        return propostaRepositorio
+                .findById( id )
+                .orElseThrow(() -> new PropostaNaoEncontradaException(
+                        String.format("Proposta com id { %d } nao encontrada.", id )
+                ));
     }
 
     @Id
@@ -162,12 +171,28 @@ public class Proposta {
         return nome;
     }
 
-    StatusProposta getStatus() {
+    public StatusProposta getStatus() {
         return status;
     }
 
     public String getNumeroCartao() {
         return numeroCartao;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public BigDecimal getSalario() {
+        return salario;
     }
 
     public static Proposta mock(){
