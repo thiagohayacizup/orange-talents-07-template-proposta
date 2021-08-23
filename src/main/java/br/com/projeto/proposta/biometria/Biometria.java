@@ -5,6 +5,7 @@ import br.com.projeto.proposta.cartao.Cartao;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 
 @Entity
 public class Biometria {
@@ -18,6 +19,8 @@ public class Biometria {
 
     @ManyToOne( cascade = CascadeType.PERSIST )
     private @NotNull Cartao cartao;
+
+    private final Instant dataCadastro = Instant.now();
 
     private Biometria(){}
 
