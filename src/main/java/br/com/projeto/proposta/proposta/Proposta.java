@@ -3,7 +3,8 @@ package br.com.projeto.proposta.proposta;
 import br.com.projeto.proposta.analise.financeira.AnaliseFinanceira;
 import br.com.projeto.proposta.analise.financeira.AnaliseFinanceiraRequisicao;
 import br.com.projeto.proposta.cartao.Cartao;
-import br.com.projeto.proposta.cartao.CartaoRequisicao;
+import br.com.projeto.proposta.cartao.sistema.legado.CartaoCriacao;
+import br.com.projeto.proposta.cartao.sistema.legado.CartaoRequisicao;
 import br.com.projeto.proposta.email.Email;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Proposta {
@@ -27,7 +29,7 @@ public class Proposta {
     }
 
     public static List<Proposta> buscarPropostarSemCartoes( final PropostaRepositorio propostaRepositorio ){
-        return propostaRepositorio.findFirst10ByStatusAndNumeroCartaoIsNull( StatusProposta.ELEGIVEL );
+        return propostaRepositorio.findFirst10ByStatusAndCartaoIsNull( StatusProposta.ELEGIVEL );
     }
 
     public static Proposta buscarPropostaPorId(final Long id, final PropostaRepositorio propostaRepositorio) {
@@ -61,7 +63,8 @@ public class Proposta {
     @Enumerated( EnumType.STRING )
     private StatusProposta status;
 
-    private String numeroCartao;
+    @OneToOne( cascade = CascadeType.MERGE )
+    private Cartao cartao;
 
     private Proposta(){}
 
@@ -86,14 +89,15 @@ public class Proposta {
 
     private transient final Logger logger = LoggerFactory.getLogger(Proposta.class);
 
-    public void associarCartao( final Cartao cartao, final PropostaRepositorio propostaRepositorio ) throws FeignException {
-        numeroCartao = cartao
+    public void associarCartao(final CartaoCriacao cartaoCriacao, final PropostaRepositorio propostaRepositorio ) throws FeignException {
+        cartao = Cartao.of( cartaoCriacao
                 .criarCartao(new CartaoRequisicao(documento, nome, id.toString()))
-                .getNumeroCartao();
+                .getNumeroCartao()
+        );
         propostaRepositorio.save(this);
         logger.info(
                 "Cartao com numero ***-{} associado a proposta com documento {}.***-{}.",
-                numeroCartao.split("-")[3],
+                cartao.getNumero().split("-")[3],
                 documento.split("\\.")[0],
                 documento.split("-")[1]
         );
@@ -176,7 +180,10 @@ public class Proposta {
     }
 
     public String getNumeroCartao() {
-        return numeroCartao;
+        return Optional
+                .ofNullable( cartao )
+                .orElse( Cartao.of("") )
+                .getNumero();
     }
 
     public String getDocumento() {

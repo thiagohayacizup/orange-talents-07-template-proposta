@@ -1,15 +1,42 @@
 package br.com.projeto.proposta.cartao;
 
-import feign.FeignException;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import br.com.projeto.proposta.cartao.excessao.CartaoNaoEncontradoException;
 
-@FeignClient(url = "${feign.cartoes}", name = "cartao")
-public interface Cartao {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
-    @PostMapping("/api/cartoes")
-    @ResponseBody CartaoResposta criarCartao( @RequestBody final CartaoRequisicao cartaoRequisicao );
+@Entity
+public class Cartao {
+
+    public static Cartao of(final String numero) {
+        return new Cartao( numero );
+    }
+
+    public static Cartao buscarPeloNumeroCartao(final String numero, final CartaoRepositorio cartaoRepositorio) {
+        return cartaoRepositorio
+                .findByNumero( numero )
+                .orElseThrow(() -> new CartaoNaoEncontradoException(
+                        String.format("Cartao com numero { %s } nao foi encontrado.", numero)
+                ));
+    }
+
+    @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
+    private Long id;
+
+    private @NotNull String numero;
+
+    private Cartao(){}
+
+    public Cartao( final String numero ){
+        this.numero = numero;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
 
 }

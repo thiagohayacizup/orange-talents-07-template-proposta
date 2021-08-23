@@ -1,5 +1,6 @@
 package br.com.projeto.proposta.advice;
 
+import br.com.projeto.proposta.cartao.excessao.CartaoNaoEncontradoException;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
 import br.com.projeto.proposta.proposta.exception.PropostaNaoEncontradaException;
@@ -46,6 +47,12 @@ public class Notificacao {
     @ExceptionHandler({PropostaNaoEncontradaException.class})
     @ResponseStatus( HttpStatus.NOT_FOUND )
     RespostaErro propostaNaoEncontrada( final PropostaNaoEncontradaException exception ){
+        return new RespostaErro(404, exception.getMessage() );
+    }
+
+    @ExceptionHandler({CartaoNaoEncontradoException.class})
+    @ResponseStatus( HttpStatus.NOT_FOUND )
+    RespostaErro cartaoNaoEncontrado( final CartaoNaoEncontradoException exception ){
         return new RespostaErro(404, exception.getMessage() );
     }
 
