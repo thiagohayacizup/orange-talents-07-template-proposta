@@ -3,6 +3,9 @@ services:
 # BANCO DADOS PROPOSTA--------------------------------------------------------
   banco-dados-proposta:
     image: mariadb:latest
+    profiles:
+      - producao
+      - desenvolvimento
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=proposta
@@ -17,6 +20,9 @@ services:
 # ANALISE FINANCEIRA API
   analise-financeira:
     image: zupacademy/analise-financeira
+    profiles:
+      - producao
+      - desenvolvimento
     ports:
       - 8081:8081
     environment:
@@ -29,6 +35,9 @@ services:
 # CONTAS API
   contas:
     image: zupacademy/contas
+    profiles:
+      - producao
+      - desenvolvimento
     ports:
       - 8082:8082
     environment:
@@ -40,6 +49,8 @@ services:
 # PROPOSTA API
   proposta:
     build: ..
+    profiles:
+      - producao
     ports:
       - 8080:8080
     depends_on:
