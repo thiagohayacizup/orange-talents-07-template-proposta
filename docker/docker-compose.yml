@@ -12,26 +12,57 @@ services:
       - 3306:3306
     volumes:
       - banco-dados-proposta-volume:/var/lib/mariadb
+    networks:
+      - proposta-network
 # ANALISE FINANCEIRA API
   analise-financeira:
     image: zupacademy/analise-financeira
     ports:
-      - 8081:9999
+      - 8081:8081
     environment:
-      SERVER_PORT: 9999
+      SERVER_PORT: 8081
       LOG_LEVEL: INFO
-      URL_SISTEMA_CARTAO: http:/contas:8083/api/cartoes
+      URL_SISTEMA_CARTAO: http:/contas:8082/api/cartoes
       JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+    networks:
+      - proposta-network
 # CONTAS API
   contas:
     image: zupacademy/contas
     ports:
-      - 8082:8888
+      - 8082:8082
     environment:
-      SERVER_PORT: 8888
+      SERVER_PORT: 8082
       LOG_LEVEL: INFO
       JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+    networks:
+      - proposta-network
+# PROPOSTA API
+  proposta:
+    build: ..
+    ports:
+      - 8080:8080
+    depends_on:
+      - banco-dados-proposta
+      - analise-financeira
+      - contas
+    environment:
+      DATABASE_HOST: banco-dados-proposta
+      DATABASE: proposta
+      DATABASE_PORT: 3306
+      DATABASE_USER: proposta
+      DATABASE_PASSWORD: proposta
+      SOLICITACAO_ANALISE_FINANCEIRA: http://analise-financeira:8081
+      CARTOES: http://contas:8082
+      SCHEDULER_INITIAL_DELAY: 5000
+      SCHEDULER_FIXED_DELAY: 10000
+    networks:
+      - proposta-network
 
 volumes:
   banco-dados-proposta-volume:
     name: banco-dados-proposta-volume
+
+networks:
+  proposta-network:
+    driver: bridge
