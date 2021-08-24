@@ -18,6 +18,7 @@ clean_docker(){
   docker rm $(docker ps -a -q)
   docker rmi $(docker images -q)
   docker volume prune
+  docker system prune --all --force --volumes
 }
 
 case $command in

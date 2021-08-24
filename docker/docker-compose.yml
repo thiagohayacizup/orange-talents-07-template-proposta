@@ -69,6 +69,34 @@ services:
       SCHEDULER_FIXED_DELAY: 10000
     networks:
       - proposta-network
+# KEYCLOAK
+  keycloak:
+    image: jboss/keycloak:11.0.0
+    profiles:
+      - producao
+      - desenvolvimento
+    ports:
+      - 8443:8443
+      - 8083:8080
+      - 9990:9990
+    depends_on:
+      - banco-dados-proposta
+      - analise-financeira
+      - contas
+    environment:
+      DB_VENDOR: mariadb
+      DB_ADDR: banco-dados-proposta
+      DB_PORT: 3306
+      DB_DATABASE: proposta
+      DB_USER: proposta
+      DB_PASSWORD: proposta
+      KEYCLOAK_USER: keycloak
+      KEYCLOAK_PASSWORD: Pa55w0rd
+      KEYCLOAK_ISSUER_URI: http://localhost:8083/auth/realms/proposta
+      KEYCLOAK_JWKS_URI: http://localhost:8083/auth/realms/proposta/protocol/openid-connect/certs
+    restart: on-failure
+    networks:
+      - proposta-network
 
 volumes:
   banco-dados-proposta-volume:
