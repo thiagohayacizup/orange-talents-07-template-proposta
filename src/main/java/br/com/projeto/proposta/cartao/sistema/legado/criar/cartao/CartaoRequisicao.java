@@ -1,4 +1,4 @@
-package br.com.projeto.proposta.cartao.sistema.legado;
+package br.com.projeto.proposta.cartao.sistema.legado.criar.cartao;
 
 public class CartaoRequisicao {
 

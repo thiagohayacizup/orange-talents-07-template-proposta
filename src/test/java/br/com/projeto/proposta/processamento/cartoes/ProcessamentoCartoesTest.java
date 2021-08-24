@@ -1,7 +1,7 @@
 package br.com.projeto.proposta.processamento.cartoes;
 
-import br.com.projeto.proposta.cartao.sistema.legado.CartaoCriacao;
-import br.com.projeto.proposta.cartao.sistema.legado.CartaoResposta;
+import br.com.projeto.proposta.cartao.sistema.legado.CartaoApiExterna;
+import br.com.projeto.proposta.cartao.sistema.legado.criar.cartao.CartaoResposta;
 import br.com.projeto.proposta.proposta.Proposta;
 import br.com.projeto.proposta.proposta.PropostaRepositorio;
 import br.com.projeto.proposta.proposta.StatusProposta;
@@ -13,14 +13,14 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-public class ProcessamentoCartoesTest {
+class ProcessamentoCartoesTest {
 
     @Test
     @DisplayName("Falha de conexao sistema externo")
     void falhaConexao(){
-        final CartaoCriacao cartaoCriacaoMock = Mockito.mock( CartaoCriacao.class );
+        final CartaoApiExterna cartaoApiExternaMock = Mockito.mock( CartaoApiExterna.class );
 
-        Mockito.when( cartaoCriacaoMock.criarCartao( Mockito.any() ) ).thenThrow(FeignException.class);
+        Mockito.when( cartaoApiExternaMock.criarCartao( Mockito.any() ) ).thenThrow(FeignException.class);
 
         final PropostaRepositorio propostaRepositorioMock = Mockito.mock(PropostaRepositorio.class);
 
@@ -33,7 +33,7 @@ public class ProcessamentoCartoesTest {
 
         Mockito.when(propostaRepositorioMock.save(Mockito.any())).thenReturn( proposta );
 
-        new ProcessarCartoesProposta( propostaRepositorioMock, cartaoCriacaoMock).processar();
+        new ProcessarCartoesProposta( propostaRepositorioMock, cartaoApiExternaMock).processar();
 
         Assertions.assertEquals("", proposta.getNumeroCartao());
     }
@@ -41,14 +41,14 @@ public class ProcessamentoCartoesTest {
     @Test
     @DisplayName("Cartao adicionado status elegivel")
     void cartaoAdicionado(){
-        final CartaoCriacao cartaoCriacaoMock = Mockito.mock( CartaoCriacao.class );
+        final CartaoApiExterna cartaoApiExternaMock = Mockito.mock( CartaoApiExterna.class );
 
         final String numeroCartao = "1234-1234-1234-1234";
 
         final CartaoResposta resposta = new CartaoResposta();
         resposta.setId( numeroCartao );
 
-        Mockito.when( cartaoCriacaoMock.criarCartao( Mockito.any() ) ).thenReturn( resposta );
+        Mockito.when( cartaoApiExternaMock.criarCartao( Mockito.any() ) ).thenReturn( resposta );
 
         final PropostaRepositorio propostaRepositorioMock = Mockito.mock(PropostaRepositorio.class);
 
@@ -61,7 +61,7 @@ public class ProcessamentoCartoesTest {
 
         Mockito.when(propostaRepositorioMock.save(Mockito.any())).thenReturn( proposta );
 
-        new ProcessarCartoesProposta( propostaRepositorioMock, cartaoCriacaoMock).processar();
+        new ProcessarCartoesProposta( propostaRepositorioMock, cartaoApiExternaMock).processar();
 
         Assertions.assertEquals( numeroCartao, proposta.getNumeroCartao() );
 

@@ -3,8 +3,8 @@ package br.com.projeto.proposta.proposta;
 import br.com.projeto.proposta.analise.financeira.AnaliseFinanceira;
 import br.com.projeto.proposta.analise.financeira.AnaliseFinanceiraRequisicao;
 import br.com.projeto.proposta.cartao.Cartao;
-import br.com.projeto.proposta.cartao.sistema.legado.CartaoCriacao;
-import br.com.projeto.proposta.cartao.sistema.legado.CartaoRequisicao;
+import br.com.projeto.proposta.cartao.sistema.legado.CartaoApiExterna;
+import br.com.projeto.proposta.cartao.sistema.legado.criar.cartao.CartaoRequisicao;
 import br.com.projeto.proposta.email.Email;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
@@ -89,8 +89,8 @@ public class Proposta {
 
     private transient final Logger logger = LoggerFactory.getLogger(Proposta.class);
 
-    public void associarCartao(final CartaoCriacao cartaoCriacao, final PropostaRepositorio propostaRepositorio ) throws FeignException {
-        cartao = Cartao.of( cartaoCriacao
+    public void associarCartao(final CartaoApiExterna cartaoApiExterna, final PropostaRepositorio propostaRepositorio ) throws FeignException {
+        cartao = Cartao.of( cartaoApiExterna
                 .criarCartao(new CartaoRequisicao(documento, nome, id.toString()))
                 .getNumeroCartao()
         );

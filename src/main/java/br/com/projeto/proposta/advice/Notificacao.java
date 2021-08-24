@@ -1,5 +1,6 @@
 package br.com.projeto.proposta.advice;
 
+import br.com.projeto.proposta.bloqueio.cartao.excessao.BloqueioCartaoJaSolicitadoOuJaBloqueadoException;
 import br.com.projeto.proposta.cartao.excessao.CartaoNaoEncontradoException;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
@@ -54,6 +55,12 @@ public class Notificacao {
     @ResponseStatus( HttpStatus.NOT_FOUND )
     RespostaErro cartaoNaoEncontrado( final CartaoNaoEncontradoException exception ){
         return new RespostaErro(404, exception.getMessage() );
+    }
+
+    @ExceptionHandler({BloqueioCartaoJaSolicitadoOuJaBloqueadoException.class})
+    @ResponseStatus( HttpStatus.UNPROCESSABLE_ENTITY )
+    RespostaErro bloqueioJaOperadoOuSolicitado( final BloqueioCartaoJaSolicitadoOuJaBloqueadoException exception ){
+        return new RespostaErro(422, exception.getMessage() );
     }
 
 }
