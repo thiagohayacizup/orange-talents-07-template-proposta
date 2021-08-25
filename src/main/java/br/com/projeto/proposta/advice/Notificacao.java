@@ -1,5 +1,6 @@
 package br.com.projeto.proposta.advice;
 
+import br.com.projeto.proposta.aviso.viagem.excessao.AvisoViagemJaRegistradoException;
 import br.com.projeto.proposta.bloqueio.cartao.excessao.BloqueioCartaoJaSolicitadoOuJaBloqueadoException;
 import br.com.projeto.proposta.cartao.excessao.CartaoNaoEncontradoException;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
@@ -60,6 +61,12 @@ public class Notificacao {
     @ExceptionHandler({BloqueioCartaoJaSolicitadoOuJaBloqueadoException.class})
     @ResponseStatus( HttpStatus.UNPROCESSABLE_ENTITY )
     RespostaErro bloqueioJaOperadoOuSolicitado( final BloqueioCartaoJaSolicitadoOuJaBloqueadoException exception ){
+        return new RespostaErro(422, exception.getMessage() );
+    }
+
+    @ExceptionHandler({AvisoViagemJaRegistradoException.class})
+    @ResponseStatus( HttpStatus.UNPROCESSABLE_ENTITY )
+    RespostaErro avisoViagemJaCadastrada( final AvisoViagemJaRegistradoException exception ){
         return new RespostaErro(422, exception.getMessage() );
     }
 

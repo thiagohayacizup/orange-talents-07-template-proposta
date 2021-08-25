@@ -1,5 +1,7 @@
 package br.com.projeto.proposta.cartao.sistema.legado;
 
+import br.com.projeto.proposta.cartao.sistema.legado.aviso.viagem.AvisoViagemRequisicao;
+import br.com.projeto.proposta.cartao.sistema.legado.aviso.viagem.AvisoViagemResposta;
 import br.com.projeto.proposta.cartao.sistema.legado.bloquear.cartao.BloqueioRequisicao;
 import br.com.projeto.proposta.cartao.sistema.legado.bloquear.cartao.BloqueioResposta;
 import br.com.projeto.proposta.cartao.sistema.legado.criar.cartao.CartaoRequisicao;
@@ -14,11 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public interface CartaoApiExterna {
 
     @PostMapping("/api/cartoes")
-    @ResponseBody
-    CartaoResposta criarCartao(@RequestBody final CartaoRequisicao cartaoRequisicao );
+    @ResponseBody CartaoResposta criarCartao(@RequestBody final CartaoRequisicao cartaoRequisicao );
 
     @PostMapping("/api/cartoes/{id}/bloqueios")
-    @ResponseBody
-    BloqueioResposta bloquear(@PathVariable("id") final String id, @RequestBody final BloqueioRequisicao bloqueioRequisicao );
+    @ResponseBody BloqueioResposta bloquear(@PathVariable("id") final String id, @RequestBody final BloqueioRequisicao bloqueioRequisicao );
+
+    @PostMapping("/api/cartoes/{id}/avisos")
+    @ResponseBody AvisoViagemResposta criarAviso(@PathVariable("id") final String id, @RequestBody final AvisoViagemRequisicao avisoViagemRequisicao );
+
 
 }

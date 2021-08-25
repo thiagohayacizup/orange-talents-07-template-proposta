@@ -64,4 +64,30 @@ class ProcessamentoBloqueioCartoesTest {
         Assertions.assertEquals(StatusBloqueio.BLOQUEADO, bloqueioCartao.getStatusBloqueio());
     }
 
+    @Test
+    @DisplayName("Bloqueio nao processado pelo sistema externo")
+    void bloqueioNaoProcessadoSistemaExterno(){
+        final CartaoApiExterna cartaoApiExternaMock = Mockito.mock( CartaoApiExterna.class );
+
+        final BloqueioResposta bloqueioResposta = new BloqueioResposta();
+        bloqueioResposta.setResultado( "FALHA" );
+
+        Mockito.when( cartaoApiExternaMock.bloquear( Mockito.any(), Mockito.any() ) ).thenReturn( bloqueioResposta );
+
+        final BloqueioCartaoRepositorio bloqueioCartaoRepositorioMock = Mockito.mock(BloqueioCartaoRepositorio.class);
+
+        final BloqueioCartao bloqueioCartao = BloqueioCartao.mock();
+
+        Mockito.when(
+                bloqueioCartaoRepositorioMock
+                        .findFirst10ByStatus( StatusBloqueio.NAO_BLOQUEADO )
+        ).thenReturn( List.of(bloqueioCartao) );
+
+        Mockito.when(bloqueioCartaoRepositorioMock.save(Mockito.any())).thenReturn( bloqueioCartao );
+
+        new BloqueioCartaoProcessador( bloqueioCartaoRepositorioMock, cartaoApiExternaMock).processar();
+
+        Assertions.assertEquals(StatusBloqueio.NAO_BLOQUEADO, bloqueioCartao.getStatusBloqueio());
+    }
+
 }

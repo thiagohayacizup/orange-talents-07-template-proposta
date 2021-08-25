@@ -78,10 +78,17 @@ public class BloqueioCartao {
         );
         instanteBloqueio = Instant.now();
         bloqueioCartaoRepositorio.save( this );
-        logger.info(
-                "Cartao com numero ***-{} bloqueado com sucesso.",
-                cartao.getNumero().split("-")[3]
-        );
+        if( status.equals( StatusBloqueio.BLOQUEADO ) ) {
+            logger.info(
+                    "Cartao com numero ***-{} bloqueado com sucesso.",
+                    cartao.getNumero().split("-")[3]
+            );
+        }else{
+            logger.info(
+                    "Cartao com numero ***-{} falhou ao bloquear.",
+                    cartao.getNumero().split("-")[3]
+            );
+        }
     }
 
     public static BloqueioCartao mock(){

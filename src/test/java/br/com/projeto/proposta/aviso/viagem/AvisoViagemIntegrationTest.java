@@ -54,6 +54,28 @@ class AvisoViagemIntegrationTest {
     }
 
     @Test
+    @DisplayName("Aviso viagem registrado sucesso ja registrado")
+    void avisoViagemRegistradoSucessoJaRegistrado() throws Exception{
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post(AVISO_VIAGEM_ENDPOINT + "/9812-6534-0192-5342")
+                                .contentType( MediaType.APPLICATION_JSON )
+                                .header("User-Agent", "Mozilla Firefox")
+                                .header("ip", "127.0.0.1")
+                                .content(
+                                        Files.readString(
+                                                ResourceUtils
+                                                        .getFile("classpath:br/com/projeto/proposta/aviso/viagem/aviso-viagem-registrado-sucesso.json")
+                                                        .toPath()
+                                        )
+                                )
+                ).andDo( MockMvcResultHandlers.print() )
+                .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
+                .andExpect( MockMvcResultMatchers.jsonPath("$.codigo").value(422) )
+                .andExpect( MockMvcResultMatchers.jsonPath("$.mensagem").value("Aviso viagem para cartao { 9812-6534-0192-5342 } ja foi registrado.") );
+    }
+
+    @Test
     @DisplayName("Cartao nao encontrado")
     void cartaoNaoEncontrado() throws Exception{
         mockMvc.perform(
