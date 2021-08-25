@@ -1,5 +1,7 @@
 package br.com.projeto.proposta.cartao.sistema.legado;
 
+import br.com.projeto.proposta.cartao.sistema.legado.associar.carteira.CarteiraRequisicao;
+import br.com.projeto.proposta.cartao.sistema.legado.associar.carteira.CarteiraResposta;
 import br.com.projeto.proposta.cartao.sistema.legado.aviso.viagem.AvisoViagemRequisicao;
 import br.com.projeto.proposta.cartao.sistema.legado.aviso.viagem.AvisoViagemResposta;
 import br.com.projeto.proposta.cartao.sistema.legado.bloquear.cartao.BloqueioRequisicao;
@@ -23,6 +25,10 @@ public interface CartaoApiExterna {
 
     @PostMapping("/api/cartoes/{id}/avisos")
     @ResponseBody AvisoViagemResposta criarAviso(@PathVariable("id") final String id, @RequestBody final AvisoViagemRequisicao avisoViagemRequisicao );
+
+    @PostMapping("/api/cartoes/{id}/carteiras")
+    @ResponseBody
+    CarteiraResposta associar(@PathVariable("id") final String id, @RequestBody final CarteiraRequisicao carteiraRequisicao);
 
 
 }

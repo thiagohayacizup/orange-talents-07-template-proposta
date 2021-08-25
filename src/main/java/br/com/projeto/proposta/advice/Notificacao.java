@@ -3,10 +3,13 @@ package br.com.projeto.proposta.advice;
 import br.com.projeto.proposta.aviso.viagem.excessao.AvisoViagemJaRegistradoException;
 import br.com.projeto.proposta.bloqueio.cartao.excessao.BloqueioCartaoJaSolicitadoOuJaBloqueadoException;
 import br.com.projeto.proposta.cartao.excessao.CartaoNaoEncontradoException;
+import br.com.projeto.proposta.carteira.excessao.CartaoNaoPodeSerAssociadoException;
+import br.com.projeto.proposta.carteira.excessao.CartaoNaoPodeSerAssociadoSistemaCaiuException;
 import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
 import br.com.projeto.proposta.proposta.exception.PropostaNaoEncontradaException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -68,6 +71,18 @@ public class Notificacao {
     @ResponseStatus( HttpStatus.UNPROCESSABLE_ENTITY )
     RespostaErro avisoViagemJaCadastrada( final AvisoViagemJaRegistradoException exception ){
         return new RespostaErro(422, exception.getMessage() );
+    }
+
+    @ExceptionHandler({CartaoNaoPodeSerAssociadoException.class})
+    @ResponseStatus( HttpStatus.UNPROCESSABLE_ENTITY )
+    RespostaErro cartaoNaoPodeSerAssociado( final CartaoNaoPodeSerAssociadoException exception ){
+        return new RespostaErro(422, exception.getMessage() );
+    }
+
+    @ExceptionHandler({CartaoNaoPodeSerAssociadoSistemaCaiuException.class})
+    @ResponseStatus( HttpStatus.SERVICE_UNAVAILABLE )
+    RespostaErro cartaoNaoPodeSerAssociadoSistemaCaiu( final CartaoNaoPodeSerAssociadoSistemaCaiuException exception ){
+        return new RespostaErro(503, exception.getMessage() );
     }
 
 }
