@@ -17,12 +17,10 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests(expressionInterceptUrlRegistry ->
                 expressionInterceptUrlRegistry
-                        .antMatchers(HttpMethod.GET, "/proposta/**")
-                        .hasAuthority("SCOPE_proposta-escopo")
-                        .antMatchers(HttpMethod.POST, "/proposta/**")
-                        .hasAuthority("SCOPE_proposta-escopo")
-                        .antMatchers(HttpMethod.POST, "/biometria/cartao/**")
-                        .hasAuthority("SCOPE_proposta-escopo")
+                        .antMatchers(HttpMethod.GET, "/proposta/**").hasAuthority("SCOPE_proposta-escopo")
+                        .antMatchers(HttpMethod.POST, "/proposta/**").hasAuthority("SCOPE_proposta-escopo")
+                        .antMatchers(HttpMethod.POST, "/biometria/cartao/**").hasAuthority("SCOPE_proposta-escopo")
+                        .antMatchers(HttpMethod.POST, "/aviso-viagem/cartao/**").hasAuthority("SCOPE_proposta-escopo")
                         .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                         .anyRequest()
                         .authenticated()

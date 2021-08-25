@@ -5,21 +5,14 @@ import br.com.projeto.proposta.bloqueio.cartao.BloqueioCartaoRepositorio;
 import br.com.projeto.proposta.cartao.Cartao;
 import br.com.projeto.proposta.cartao.CartaoRepositorio;
 
-import javax.validation.constraints.NotBlank;
-
 public class BloqueioCartaoRequisicao {
 
-    @NotBlank(message = "Ip nao pode ser branco ou nulo")
-    private String ip;
+    private final String ip;
 
-    @NotBlank(message = "User agent nao pode ser branco ou nulo")
-    private String userAgent;
+    private final String userAgent;
 
-    public void setIp(final String ip) {
+    public BloqueioCartaoRequisicao(final String ip, final String userAgent) {
         this.ip = ip;
-    }
-
-    public void setUserAgent(final String userAgent) {
         this.userAgent = userAgent;
     }
 

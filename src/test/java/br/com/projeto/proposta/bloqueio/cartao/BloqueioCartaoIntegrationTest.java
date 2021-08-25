@@ -13,9 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.util.ResourceUtils;
-
-import java.nio.file.Files;
 
 @ActiveProfiles( value = "test" )
 @SpringBootTest
@@ -38,13 +35,8 @@ class BloqueioCartaoIntegrationTest {
                         MockMvcRequestBuilders
                                 .post(BLOQUEIO_ENDPOINT + "/9812-6534-0192-5342")
                                 .contentType( MediaType.APPLICATION_JSON )
-                                .content(
-                                        Files.readString(
-                                                ResourceUtils
-                                                        .getFile("classpath:br/com/projeto/proposta/bloqueio/solicitacao-bloqueio-sucesso.json")
-                                                        .toPath()
-                                        )
-                                )
+                                .header("User-Agent", "Mozilla Firefox")
+                                .header("ip", "127.0.0.1")
                 ).andDo( MockMvcResultHandlers.print() )
                 .andExpect( MockMvcResultMatchers.status().isOk() )
                 .andExpect( MockMvcResultMatchers.content().contentType( MediaType.APPLICATION_JSON ) )
@@ -64,13 +56,8 @@ class BloqueioCartaoIntegrationTest {
                         MockMvcRequestBuilders
                                 .post(BLOQUEIO_ENDPOINT + "/3333-4444-5555-6666")
                                 .contentType( MediaType.APPLICATION_JSON )
-                                .content(
-                                        Files.readString(
-                                                ResourceUtils
-                                                        .getFile("classpath:br/com/projeto/proposta/bloqueio/solicitacao-bloqueio-sucesso.json")
-                                                        .toPath()
-                                        )
-                                )
+                                .header("User-Agent", "Mozilla Firefox")
+                                .header("ip", "127.0.0.1")
                 ).andDo( MockMvcResultHandlers.print() )
                 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
                 .andExpect( MockMvcResultMatchers.content().contentType( MediaType.APPLICATION_JSON ) )
@@ -85,13 +72,8 @@ class BloqueioCartaoIntegrationTest {
                         MockMvcRequestBuilders
                                 .post(BLOQUEIO_ENDPOINT + "/1231-1412-1412-1438")
                                 .contentType( MediaType.APPLICATION_JSON )
-                                .content(
-                                        Files.readString(
-                                                ResourceUtils
-                                                        .getFile("classpath:br/com/projeto/proposta/bloqueio/solicitacao-bloqueio-sucesso.json")
-                                                        .toPath()
-                                        )
-                                )
+                                .header("User-Agent", "Mozilla Firefox")
+                                .header("ip", "127.0.0.1")
                 ).andDo( MockMvcResultHandlers.print() )
                 .andExpect( MockMvcResultMatchers.status().isNotFound() )
                 .andExpect( MockMvcResultMatchers.content().contentType( MediaType.APPLICATION_JSON ) )

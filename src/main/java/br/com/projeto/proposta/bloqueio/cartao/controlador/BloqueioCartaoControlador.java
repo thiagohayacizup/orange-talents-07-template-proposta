@@ -21,8 +21,8 @@ class BloqueioCartaoControlador {
 
     @PostMapping("/bloqueio/cartao/{cartao}")
     @ResponseStatus( HttpStatus.OK )
-    public @ResponseBody BloqueioCartaoResposta bloquear(@PathVariable("cartao") final String cartao, @RequestBody @Valid final BloqueioCartaoRequisicao bloqueioCartaoRequisicao){
-        return bloqueioCartaoRequisicao.bloquear( cartao, bloqueioCartaoRepositorio, cartaoRepositorio);
+    public @ResponseBody BloqueioCartaoResposta bloquear(@PathVariable("cartao") final String cartao, @RequestHeader("ip") final String ip, @RequestHeader("User-Agent") final String userAgent){
+        return new BloqueioCartaoRequisicao(ip, userAgent).bloquear( cartao, bloqueioCartaoRepositorio, cartaoRepositorio);
     }
 
 }

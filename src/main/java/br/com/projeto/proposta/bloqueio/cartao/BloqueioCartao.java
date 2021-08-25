@@ -25,10 +25,10 @@ public class BloqueioCartao {
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Ip nao pode ser branco ou nulo.")
     private @NotNull String ip;
 
-    @NotBlank
+    @NotBlank(message = "User agent nao pode ser branco ou nulo.")
     private @NotNull String userAgent;
 
     @OneToOne( cascade = CascadeType.PERSIST )
