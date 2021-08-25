@@ -23,6 +23,7 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .hasAuthority("SCOPE_proposta-escopo")
                         .antMatchers(HttpMethod.POST, "/biometria/cartao/**")
                         .hasAuthority("SCOPE_proposta-escopo")
+                        .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                         .anyRequest()
                         .authenticated()
         ).oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);

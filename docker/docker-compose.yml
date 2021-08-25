@@ -48,6 +48,7 @@ services:
       - proposta-network
 # PROPOSTA API
   proposta:
+    image: thiagohayacizup/proposta
     build: ..
     profiles:
       - producao
@@ -92,15 +93,46 @@ services:
       DB_PASSWORD: proposta
       KEYCLOAK_USER: keycloak
       KEYCLOAK_PASSWORD: Pa55w0rd
-      KEYCLOAK_ISSUER_URI: http://localhost:8083/auth/realms/proposta
-      KEYCLOAK_JWKS_URI: http://localhost:8083/auth/realms/proposta/protocol/openid-connect/certs
+      KEYCLOAK_ISSUER_URI: http://keycloak:8083/auth/realms/proposta
+      KEYCLOAK_JWKS_URI: http://keycloak:8083/auth/realms/proposta/protocol/openid-connect/certs
     restart: on-failure
+    networks:
+      - proposta-network
+# PROMETHEUS
+  prometheus:
+    image: prom/prometheus:v2.22.0
+    profiles:
+      - producao
+      - desenvolvimento
+    volumes:
+      - prometheus-volume:/etc/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - proposta-network
+# GRAFANA
+  grafana:
+    image: grafana/grafana:7.3.4
+    profiles:
+      - producao
+      - desenvolvimento
+    volumes:
+      - grafana-volume:/var/lib/grafana
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
     networks:
       - proposta-network
 
 volumes:
   banco-dados-proposta-volume:
     name: banco-dados-proposta-volume
+  grafana-volume:
+    name: grafana-volume
+  prometheus-volume:
+    name: prometheus-volume
 
 networks:
   proposta-network:
