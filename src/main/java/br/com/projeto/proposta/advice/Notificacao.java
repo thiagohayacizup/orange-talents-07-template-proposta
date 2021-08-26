@@ -26,7 +26,7 @@ public class Notificacao {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus( HttpStatus.BAD_REQUEST )
     RespostaErro dadosInvalidos( final MethodArgumentNotValidException exception ){
-        return new RespostaErro(400, exception.getFieldErrors().get(0).getDefaultMessage() );
+        return new RespostaErro(400, exception.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
