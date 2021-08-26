@@ -46,10 +46,10 @@ public class CarteiraDigital {
 
     public CarteiraDigital associar(final CarteiraDigitalRepositorio carteiraDigitalRepositorio, final CartaoApiExterna cartaoApiExterna) {
         carteiraDigitalRepositorio
-                .findByCarteiraAndCartaoAndStatus( carteira, cartao, status )
+                .findByCarteiraAndCartaoAndStatus( carteira, cartao, StatusCarteira.ASSOCIADO )
                 .ifPresent(carteiraDigital -> {
                     throw new CartaoJaEstaAssociadoACarteiraException(
-                            String.format("Cartao { %s } ja associado a carteira { %s } com status { %s }", cartao, carteira, status)
+                            String.format("Cartao { %s } ja associado a carteira { %s } com status { %s }", cartao.getNumero(), carteira, StatusCarteira.ASSOCIADO)
                     );
                 });
         solicitarAssociacao( cartaoApiExterna );
