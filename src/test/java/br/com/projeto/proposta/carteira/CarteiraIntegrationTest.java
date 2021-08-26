@@ -70,8 +70,52 @@ class CarteiraIntegrationTest {
                 ).andDo( MockMvcResultHandlers.print() )
                 .andExpect( MockMvcResultMatchers.status().isCreated() )
                 .andExpect( MockMvcResultMatchers.content().contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( MockMvcResultMatchers.jsonPath("$.id").value(1L) )
+                .andExpect( MockMvcResultMatchers.jsonPath("$.id").value(2L) )
                 .andExpect( MockMvcResultMatchers.jsonPath("$.carteira").value("PAYPAL") )
+                .andExpect( MockMvcResultMatchers.jsonPath("$.status").value("ASSOCIADO") )
+                .andExpect( MockMvcResultMatchers.header().string("Location", "http://localhost/carteira/2") );
+    }
+
+    @Test
+    @DisplayName("Cartao associada a carteira com sucesso samsung pay")
+    @Sql( statements = {
+            "INSERT INTO Cartao( numero ) VALUES ('2222-2222-2222-2222')"
+    })
+    void cartaoAssociadoAcarteiraSucessoSamsungPay() throws Exception{
+        WireMock.stubFor(
+                WireMock
+                        .post("/api/cartoes/2222-2222-2222-2222/carteiras")
+                        .withHeader("Content-Type", WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
+                        .willReturn(
+                                WireMock
+                                        .ok()
+                                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                                        .withBody(
+                                                Files.readString(
+                                                        ResourceUtils
+                                                                .getFile("classpath:br/com/projeto/proposta/carteira/carteira-resposta-legado.json")
+                                                                .toPath()
+                                                )
+                                        )
+                        )
+        );
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post(CARTEIRA_ENDPOINT + "/2222-2222-2222-2222")
+                                .contentType( MediaType.APPLICATION_JSON )
+                                .content(
+                                        Files.readString(
+                                                ResourceUtils
+                                                        .getFile("classpath:br/com/projeto/proposta/carteira/carteira-associada-sucesso-samsung-pay.json")
+                                                        .toPath()
+                                        )
+                                )
+                ).andDo( MockMvcResultHandlers.print() )
+                .andExpect( MockMvcResultMatchers.status().isCreated() )
+                .andExpect( MockMvcResultMatchers.content().contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( MockMvcResultMatchers.jsonPath("$.id").value(1L) )
+                .andExpect( MockMvcResultMatchers.jsonPath("$.carteira").value("SAMSUNG_PAY") )
                 .andExpect( MockMvcResultMatchers.jsonPath("$.status").value("ASSOCIADO") )
                 .andExpect( MockMvcResultMatchers.header().string("Location", "http://localhost/carteira/1") );
     }
