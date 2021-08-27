@@ -4,6 +4,7 @@ import br.com.projeto.proposta.analise.financeira.AnaliseFinanceira;
 import br.com.projeto.proposta.analise.financeira.AnaliseFinanceiraResposta;
 import br.com.projeto.proposta.analise.financeira.ResultadoSolicitacao;
 import feign.FeignException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -123,7 +124,7 @@ class PropostaIntegrationTest {
     @DisplayName("Proposta com documento ja cadastrado")
     @Sql(statements = {
             "INSERT INTO Proposta(documento, email, nome, endereco, salario )" +
-            "VALUES('959.807.330-00', 'email@email.com', 'Proposta', 'rua abc', 100.50)"
+            "VALUES('94c4e10c2d19617641258e617780041ccac29b3f9f5eb13ec096ab4df889a1d1', 'email@email.com', 'Proposta', 'rua abc', 100.50)"
     })
     void propostaComDocumentoJaCadastrado() throws Exception {
         mockMvc.perform(
@@ -141,7 +142,7 @@ class PropostaIntegrationTest {
                 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
                 .andExpect( MockMvcResultMatchers.content().contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( MockMvcResultMatchers.jsonPath("$.codigo").value(422) )
-                .andExpect( MockMvcResultMatchers.jsonPath("$.mensagem").value("Ja existe uma proposta com o documento { 959.807.330-00 }.") );
+                .andExpect( MockMvcResultMatchers.jsonPath("$.mensagem").value("Ja existe uma proposta com este documento.") );
     }
 
     @Test

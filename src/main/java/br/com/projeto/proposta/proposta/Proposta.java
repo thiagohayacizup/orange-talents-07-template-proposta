@@ -10,6 +10,7 @@ import br.com.projeto.proposta.proposta.exception.EmailInvalidoException;
 import br.com.projeto.proposta.proposta.exception.PropostaComDocumentoJaCriadaException;
 import br.com.projeto.proposta.proposta.exception.PropostaNaoEncontradaException;
 import feign.FeignException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,6 @@ public class Proposta {
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long id;
 
-    @Column(columnDefinition = "CHAR(18)")
     @NotBlank(message = "Documento nao pode ser branco.")
     private @NotNull String documento;
 
@@ -69,7 +69,7 @@ public class Proposta {
     private Proposta(){}
 
     Proposta( final Builder builder ){
-        documento = builder.documento;
+        documento = DigestUtils.sha256Hex(builder.documento);
         nome = builder.nome;
         endereco = builder.endereco;
         salario = builder.salario;
@@ -96,10 +96,8 @@ public class Proposta {
         );
         propostaRepositorio.save(this);
         logger.info(
-                "Cartao com numero ***-{} associado a proposta com documento {}.***-{}.",
-                cartao.getNumero().split("-")[3],
-                documento.split("\\.")[0],
-                documento.split("-")[1]
+                "Cartao com numero ***-{} associado a proposta com documento",
+                cartao.getNumero().split("-")[3]
         );
     }
 
@@ -108,11 +106,7 @@ public class Proposta {
             status = analiseFinanceira
                     .solicitar( new AnaliseFinanceiraRequisicao(documento, nome, id.toString()) )
                     .paraStatusProposta();
-            logger.info(
-                    "Analise financeira do solicitante {}.***-{} processado.",
-                    documento.split("\\.")[0],
-                    documento.split("-")[1]
-            );
+            logger.info("Analise financeira do solicitante processado.");
         }catch (FeignException exception){
             logger.error( exception.getMessage());
         }
@@ -123,7 +117,7 @@ public class Proposta {
                 .findByDocumento( documento )
                 .ifPresent( proposta -> {
                     throw new PropostaComDocumentoJaCriadaException(
-                            String.format("Ja existe uma proposta com o documento { %s }.", documento)
+                            "Ja existe uma proposta com este documento."
                     );
                 });
     }
@@ -137,7 +131,9 @@ public class Proposta {
         private BigDecimal salario;
 
         public Builder comDocumento(final String documento) {
-            this.documento = documento;
+            this.documento = documento.replaceAll("\\.", "")
+                    .replaceAll("-", "")
+                    .replaceAll("/","");
             return this;
         }
 

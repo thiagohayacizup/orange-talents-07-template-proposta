@@ -6,6 +6,7 @@ import br.com.projeto.proposta.proposta.Proposta;
 import br.com.projeto.proposta.proposta.PropostaRepositorio;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 class PropostaRequisicao {
@@ -17,6 +18,7 @@ class PropostaRequisicao {
     }
 
     @Documento
+    @Size( min = 11, max = 18, message = "Documento com tamanho invalido.")
     private @NotBlank String documento;
 
     public void setDocumento(final String documento) {
